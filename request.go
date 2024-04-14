@@ -5,8 +5,6 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"errors"
-	"fmt"
-	"io"
 	"net/http"
 	"strings"
 )
@@ -25,9 +23,8 @@ func ChatCompletions(client HTTPClient, api_request APIRequest, api_key string, 
 		return nil, err
 	}
 	if response.StatusCode != 200 {
-		body, _ := io.ReadAll(response.Body)
-		fmt.Println(string(body))
-		return nil, errors.New(string(body))
+
+		return nil, errors.New("response status code is not 200")
 	}
 	return response, nil
 }
@@ -51,8 +48,6 @@ func GetSessionToken(client HTTPClient, api_key string, proxy string) (Authentic
 		return AuthenticateResponse{}, err
 	}
 	if req.StatusCode != 200 {
-		body, _ := io.ReadAll(req.Body)
-		fmt.Println(string(body))
 		return AuthenticateResponse{}, errors.New("authenticate failed")
 	}
 	var result AuthenticateResponse
@@ -64,7 +59,6 @@ func GetSessionToken(client HTTPClient, api_key string, proxy string) (Authentic
 }
 
 func GetModels(client HTTPClient, api_key string, proxy string) (*http.Response, error) {
-
 	header := baseHeader()
 	header.Set("authorization", "Bearer "+api_key)
 	if proxy != "" {
@@ -74,10 +68,13 @@ func GetModels(client HTTPClient, api_key string, proxy string) (*http.Response,
 	if err != nil {
 		return nil, err
 	}
+	if response.StatusCode != 200 {
+		return nil, errors.New("response status code is not 200")
+	}
 	return response, nil
 }
 
-func GerProfile(client HTTPClient, api_key string, proxy string) (string, error) {
+func GerOrganizationId(client HTTPClient, api_key string, proxy string) (string, error) {
 	header := baseHeader()
 	header.Set("authorization", "Bearer "+api_key)
 	if proxy != "" {
@@ -86,6 +83,9 @@ func GerProfile(client HTTPClient, api_key string, proxy string) (string, error)
 	response, err := client.Request("GET", "https://api.groq.com/platform/v1/user/profile", header, nil, nil)
 	if err != nil {
 		return "", err
+	}
+	if response.StatusCode != 200 {
+		return "", errors.New("response status code is not 200")
 	}
 	var result Profile
 	err = json.NewDecoder(response.Body).Decode(&result)

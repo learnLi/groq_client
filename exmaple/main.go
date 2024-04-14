@@ -2,7 +2,7 @@ package main
 
 import (
 	"encoding/json"
-	groq "github.com/learnLi/groq_client"
+	"github.com/learnLi/groq_client"
 	"log"
 	"net/http"
 	"time"
