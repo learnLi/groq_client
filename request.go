@@ -58,9 +58,11 @@ func GetSessionToken(client HTTPClient, api_key string, proxy string) (Authentic
 	return result, nil
 }
 
-func GetModels(client HTTPClient, api_key string, proxy string) (*http.Response, error) {
+func GetModels(client HTTPClient, api_key string, organization string, proxy string) (*http.Response, error) {
 	header := baseHeader()
 	header.Set("authorization", "Bearer "+api_key)
+	header.Set("groq-app", "chat")
+	header.Set("groq-organization", organization)
 	if proxy != "" {
 		client.SetProxy(proxy)
 	}
