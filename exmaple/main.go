@@ -18,8 +18,8 @@ func init() {
 
 func main() {
 
-	sessionToken := "<you-session-token>"
-	organization := "<you-organization>"
+	sessionToken := "3WbHxt-tzOVjM5jhMCJA-c60WR9CdndB0ar2uuz_4oI5"
+	organization := "org_01hv6rjev0etjsn98824ks7rac"
 	account := groq.NewAccount(sessionToken, organization)
 	flog := log.Default()
 

@@ -1,7 +1,6 @@
 package groq
 
 import (
-	"bufio"
 	"io"
 	"net/http"
 	"net/url"
@@ -36,7 +35,7 @@ func handlerCookies(req *http.Request, cookies []*http.Cookie) {
 }
 
 func (b BasicClient) Request(method string, url string, headers Headers, cookies []*http.Cookie, body io.Reader) (*http.Response, error) {
-	req, err := http.NewRequest(method, url, bufio.NewReader(body))
+	req, err := http.NewRequest(method, url, body)
 	if err != nil {
 		return nil, err
 	}
