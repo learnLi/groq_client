@@ -1,6 +1,7 @@
 package groq
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"time"
 )
@@ -28,5 +29,5 @@ func generateSdkClient() string {
 	if err != nil {
 		return ""
 	}
-	return string(marshal)
+	return base64.StdEncoding.EncodeToString(marshal)
 }
