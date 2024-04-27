@@ -7,12 +7,21 @@ import (
 	"net/http"
 )
 
+type MagicLinkRequest struct {
+	SignupMagicLinkURL      string `json:"signup_magic_link_url"`
+	SignupExpirationMinutes int    `json:"signup_expiration_minutes"`
+	LoginMagicLinkURL       string `json:"login_magic_link_url"`
+	LoginExpirationMinutes  int    `json:"login_expiration_minutes"`
+	Email                   string `json:"email"`
+	DfpTelemetryID          string `json:"dfp_telemetry_id"`
+}
+
 func LoginOrCreate(client HTTPClient, email string, proxy string) (*http.Response, error) {
 	rawUrl := "https://web.stytch.com/sdk/v1/magic_links/email/login_or_create"
 	if proxy != "" {
 		client.SetProxy(proxy)
 	}
-	dfpTelemetryId, err := Submit(client, "")
+	dfpTelemetryId, err := Submit(client, proxy)
 	if err != nil {
 		return nil, err
 	}
@@ -20,15 +29,15 @@ func LoginOrCreate(client HTTPClient, email string, proxy string) (*http.Respons
 	header.Set("authorization", "Basic "+BasicAuth)
 	header.Set("x-sdk-client", generateSdkClient())
 	header.Set("x-sdk-parent-host", "https://groq.com")
-	jsonData := map[string]interface{}{
-		"signup_magic_link_url":     "https://groq.com/authenticate",
-		"signup_expiration_minutes": 60,
-		"login_magic_link_url":      "https://groq.com/authenticate",
-		"login_expiration_minutes":  60,
-		"email":                     email,
-		"dfp_telemetry_id":          dfpTelemetryId,
+	requestPayload := MagicLinkRequest{
+		SignupMagicLinkURL:      "https://groq.com/authenticate",
+		SignupExpirationMinutes: 60,
+		LoginMagicLinkURL:       "https://groq.com/authenticate",
+		LoginExpirationMinutes:  60,
+		Email:                   email,
+		DfpTelemetryID:          dfpTelemetryId,
 	}
-	data, err := json.Marshal(jsonData)
+	data, err := json.Marshal(requestPayload)
 	if err != nil {
 		return nil, err
 	}
@@ -64,7 +73,6 @@ func LoginOrCreateCallback(client HTTPClient, token string, proxy string) (*http
 	if err != nil {
 		return nil, err
 	}
-	defer req.Body.Close()
 	if req.StatusCode != 200 {
 		return nil, errors.New("login or create callback failed")
 	}
