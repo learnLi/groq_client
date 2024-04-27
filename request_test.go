@@ -4,15 +4,15 @@ import "testing"
 
 func TestGerOrganizationId(t *testing.T) {
 	client := NewBasicClient()
-	sessionToken := "3WbHxt-tzOVjM5jhMCJA-c60WR9CdndB0ar2uuz_4oI5"
+	sessionToken := "ywN9r5lAbI9HchNN6JsT2qQIfLrRodv4HT_4GjzlFJO-"
 	account := NewAccount(sessionToken, "")
 
-	token, err := GetSessionToken(client, account.SessionToken, "")
+	token, err := GetSessionToken(client, account.SessionToken, "http://127.0.0.1:7990")
 	if err != nil {
 		return
 	}
 
-	organizationId, err := GerOrganizationId(client, token.Data.SessionJwt, "")
+	organizationId, err := GerOrganizationId(client, token.Data.SessionJwt, "http://127.0.0.1:7990")
 	if err != nil {
 		return
 	}
