@@ -43,15 +43,16 @@ func GetSessionToken(client HTTPClient, api_key string, proxy string) (Authentic
 	header.Set("x-sdk-parent-host", "https://groq.com")
 
 	rawUrl := "https://web.stytch.com/sdk/v1/sessions/authenticate"
-	req, err := client.Request("POST", rawUrl, header, nil, strings.NewReader(`{}`))
+	resp, err := client.Request("POST", rawUrl, header, nil, strings.NewReader(`{}`))
 	if err != nil {
 		return AuthenticateResponse{}, err
 	}
-	if req.StatusCode != 200 {
+	defer resp.Body.Close()
+	if resp.StatusCode != 200 {
 		return AuthenticateResponse{}, errors.New("authenticate failed")
 	}
 	var result AuthenticateResponse
-	err = json.NewDecoder(req.Body).Decode(&result)
+	err = json.NewDecoder(resp.Body).Decode(&result)
 	if err != nil {
 		return AuthenticateResponse{}, err
 	}
@@ -66,14 +67,39 @@ func GetModels(client HTTPClient, api_key string, organization string, proxy str
 	if proxy != "" {
 		client.SetProxy(proxy)
 	}
-	response, err := client.Request("GET", "https://api.groq.com/openai/v1/models", header, nil, nil)
+	resp, err := client.Request("GET", "https://api.groq.com/openai/v1/models", header, nil, nil)
 	if err != nil {
 		return nil, err
 	}
-	if response.StatusCode != 200 {
+	if resp.StatusCode != 200 {
 		return nil, errors.New("response status code is not 200")
 	}
-	return response, nil
+	return resp, nil
+}
+
+func PostOrganizationId(client HTTPClient, api_key string, sub string, proxy string) (string, error) {
+	header := baseHeader()
+	header.Set("authorization", "Bearer "+api_key)
+	header.Set("x-stytch-telemetry-id", sub)
+	if proxy != "" {
+		client.SetProxy(proxy)
+	}
+	resp, err := client.Request("POST", "https://api.groq.com/platform/v1/user/profile:signup", header, nil, nil)
+	if err != nil {
+		return "", err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != 200 {
+		return "", errors.New("response status code is not 200")
+	}
+	var result struct {
+		UserId string `json:"user_id"`
+	}
+	err = json.NewDecoder(resp.Body).Decode(&result)
+	if err != nil {
+		return "", err
+	}
+	return result.UserId, nil
 }
 
 func GerOrganizationId(client HTTPClient, api_key string, proxy string) (string, error) {
@@ -82,15 +108,16 @@ func GerOrganizationId(client HTTPClient, api_key string, proxy string) (string,
 	if proxy != "" {
 		client.SetProxy(proxy)
 	}
-	response, err := client.Request("GET", "https://api.groq.com/platform/v1/user/profile", header, nil, nil)
+	resp, err := client.Request("GET", "https://api.groq.com/platform/v1/user/profile", header, nil, nil)
 	if err != nil {
 		return "", err
 	}
-	if response.StatusCode != 200 {
+	defer resp.Body.Close()
+	if resp.StatusCode != 200 {
 		return "", errors.New("response status code is not 200")
 	}
 	var result Profile
-	err = json.NewDecoder(response.Body).Decode(&result)
+	err = json.NewDecoder(resp.Body).Decode(&result)
 	if err != nil {
 		return "", err
 	}

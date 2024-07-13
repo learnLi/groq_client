@@ -17,13 +17,13 @@ func getTime() string {
 
 func generateSdkClient() string {
 	bas := map[string]interface{}{
-		"event_id":       "event-id-d65b2524-ab2c-4cda-8259-e50231fc4a4d",
-		"app_session_id": "app-session-id-9b98a045-49f6-4a32-8cf5-7850018b7148",
-		"persistent_id":  "persistent-id-27df4aea-b5c2-4806-892d-c9280abbd7c8",
+		"event_id":       "event-id-ef768192-d460-46ee-b293-d7d42e4bec2e",
+		"app_session_id": "app-session-id-cfc2e7d2-954f-4baf-8b71-a911c5d84c9c",
+		"persistent_id":  "persistent-id-6327df6e-f4ca-4b5b-8ce8-24b710bb3d1b",
 		"client_sent_at": getTime(),
 		"timezone":       "Asia/Shanghai",
 		"app":            map[string]string{"identifier": "groq.com"},
-		"sdk":            map[string]string{"identifier": "Stytch.js Javascript SDK", "version": "4.5.3"},
+		"sdk":            map[string]string{"identifier": "Stytch.js Javascript SDK", "version": "4.6.0"},
 	}
 	marshal, err := json.Marshal(bas)
 	if err != nil {

@@ -30,9 +30,9 @@ func LoginOrCreate(client HTTPClient, email string, proxy string) (*http.Respons
 	header.Set("x-sdk-client", generateSdkClient())
 	header.Set("x-sdk-parent-host", "https://groq.com")
 	requestPayload := MagicLinkRequest{
-		SignupMagicLinkURL:      "https://groq.com/authenticate",
+		SignupMagicLinkURL:      "https://groq.com/authenticate/signup",
 		SignupExpirationMinutes: 60,
-		LoginMagicLinkURL:       "https://groq.com/authenticate",
+		LoginMagicLinkURL:       "https://groq.com/authenticate/login",
 		LoginExpirationMinutes:  60,
 		Email:                   email,
 		DfpTelemetryID:          dfpTelemetryId,
@@ -42,14 +42,14 @@ func LoginOrCreate(client HTTPClient, email string, proxy string) (*http.Respons
 		return nil, err
 	}
 
-	req, err := client.Request("POST", rawUrl, header, nil, bytes.NewBuffer(data))
+	resp, err := client.Request("POST", rawUrl, header, nil, bytes.NewBuffer(data))
 	if err != nil {
 		return nil, err
 	}
-	if req.StatusCode != 200 {
+	if resp.StatusCode != 200 {
 		return nil, errors.New("login or create failed")
 	}
-	return req, nil
+	return resp, nil
 }
 
 func LoginOrCreateCallback(client HTTPClient, token string, proxy string) (*http.Response, error) {
@@ -69,14 +69,14 @@ func LoginOrCreateCallback(client HTTPClient, token string, proxy string) (*http
 	if err != nil {
 		return nil, err
 	}
-	req, err := client.Request("POST", rawUrl, header, nil, bytes.NewBuffer(data))
+	resp, err := client.Request("POST", rawUrl, header, nil, bytes.NewBuffer(data))
 	if err != nil {
 		return nil, err
 	}
-	if req.StatusCode != 200 {
+	if resp.StatusCode != 200 {
 		return nil, errors.New("login or create callback failed")
 	}
-	return req, nil
+	return resp, nil
 }
 
 type CallbackResponse struct {
