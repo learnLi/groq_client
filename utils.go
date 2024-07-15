@@ -3,6 +3,7 @@ package groq
 import (
 	"encoding/base64"
 	"encoding/json"
+	"math/rand"
 	"time"
 )
 
@@ -30,4 +31,18 @@ func generateSdkClient() string {
 		return ""
 	}
 	return base64.StdEncoding.EncodeToString(marshal)
+}
+
+func RandomHexadecimalString(length int) string {
+	if length < 1 {
+		length = 4
+	}
+	rand.Seed(time.Now().UnixNano())
+	const charset = "0123456789abcdef"
+	// const length = 16 // The length of the string you want to generate
+	b := make([]byte, length)
+	for i := range b {
+		b[i] = charset[rand.Intn(len(charset))]
+	}
+	return string(b)
 }
