@@ -3,10 +3,15 @@ package groq
 type Account struct {
 	SessionToken string `json:"session_token"`
 	Organization string `json:"organization"`
+	IsAPIKey     bool   `json:"is_api_key"`
 }
 
 func NewAccount(sessionToken string, organization string) *Account {
-	return &Account{SessionToken: sessionToken, Organization: organization}
+	return &Account{SessionToken: sessionToken, Organization: organization, IsAPIKey: false}
+}
+
+func NewAccountWithAPIKey(sessionToken string, organization string, isAPIKey bool) *Account {
+	return &Account{SessionToken: sessionToken, Organization: organization, IsAPIKey: isAPIKey}
 }
 
 type Profile struct {
